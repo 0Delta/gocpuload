@@ -5,6 +5,8 @@ import (
 	"os"
 	"runtime"
 
+	internal "github.com/0Delta/gocpuload"
+
 	cli "github.com/urfave/cli/v2"
 )
 
@@ -65,7 +67,7 @@ func main() {
 		if percentage <= 0 || percentage > 100 {
 			return cli.NewExitError("percentage must between 1 - 100", EINVAL)
 		}
-		RunCPULoad(coresCount, timeSeconds, percentage)
+		internal.RunCPULoad(coresCount, timeSeconds, percentage)
 		return nil
 	}
 
