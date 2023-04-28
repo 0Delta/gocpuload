@@ -5,7 +5,7 @@ Generate CPU load on Windows/Linux/Mac.
 # Install
 
 ```sh
-go get -u github.com/vikyd/go-cpu-load
+go get -u github.com/0Delta/go-cpu-load
 ```
 
 or download binary file directly
@@ -65,3 +65,7 @@ go test -v
 - Want to run 30% of all CPU cores
   - 30ms: run (CPU 100%)
   - 70ms: sleep(CPU 0%)
+
+# LICENSE
+
+MIT
