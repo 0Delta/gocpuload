@@ -1,39 +1,34 @@
-# go-cpu-load
+gocpuload
+=========
+[![Go Reference](https://pkg.go.dev/badge/golang.org/x/pkgsite.svg)][goRef]
 
-Generate CPU load on Windows/Linux/Mac.
+Usage:
+------
 
-# Install
-
-```sh
-go get -u github.com/0Delta/go-cpu-load
-```
-
-or download binary file directly
-
-# Usage
+### as CLI
 
 example 01: run 30% of all CPU cores for 10 seconds
 
 ```sh
-go-cpu-load -p 30 -t 10
+gocpuload -p 30 -t 10
 ```
 
 example 02: run 30% of all CPU cores forver
 
 ```sh
-go-cpu-load -p 30
+gocpuload -p 30
 ```
 
 example 03: run 30% of 2 of CPU cores for 10 seconds
 
 ```sh
-go-cpu-load -p 30 -c 2 -t 10
+gocpuload -p 30 -c 2 -t 10
 ```
 
 - `all CPU load` = (num of para `c` _ num of `p`) / (all cores count of CPU _ 100)
 - may not specify cores run the load only, it just promise the `all CPU load`, and not promise each cores run the same load
 
-# Parameters
+#### CLI Parameters
 
 ```
 --coresCount value, -c value   how many cores (optional, default: 8)
@@ -45,27 +40,57 @@ go-cpu-load -p 30 -c 2 -t 10
 --help, -h                     show help
 ```
 
-# Build
+### as Liblary
 
-```sh
-go build
+```go
+import "github.com/0Delta/gocpuload"
+
+func main(){
+    // RunCPULoad(coresCount int, timeSeconds int, percentage int)
+    //
+    // This function currently does not return control immediately.
+    // If you want something action under pressure, use goroutine.
+    go gocpuload.RunCPULoad(runtime.NumCPU()/2, 3, 80)
+
+}
 ```
 
-# test
+See [GoDoc][goRef]
 
-```sh
-go test -v
+Requirements:
+-------------
++ go
+
+for test in Windows
+  + cgo
+
+Install:
+--------
++ go1.6 or higher
+```
+go install github.com/0Delta/gocpuload@latest
 ```
 
-> currently only provide Windows testing
++ go1.5 or lower
+```
+go get -u github.com/0Delta/gocpuload
+```
 
-# How it runs
+How it runs:
+--------
 
 - Giving a range of time(e.g. 100ms)
 - Want to run 30% of all CPU cores
   - 30ms: run (CPU 100%)
   - 70ms: sleep(CPU 0%)
 
-# LICENSE
-
+license:
+--------
 MIT
+
+Author:
+-------
+0Δ(0deltast@gmail.com)
+
+
+[goRef]:https://pkg.go.dev/github.com/0Delta/gocpuload
