@@ -1,36 +1,28 @@
 package gocpuload
 
 import (
+	"context"
 	"runtime"
 	"time"
 )
 
 // RunCPULoad run CPU load in specify cores count and percentage
-func RunCPULoad(coresCount int, timeSeconds int, percentage int) {
+func RunCPULoad(ctx context.Context, coresCount int, timeSeconds int, percentage int) (context.Context, context.CancelFunc) {
+	ctx, cancelfunc := context.WithTimeout(ctx, time.Duration(timeSeconds*1000*1000*1000))
 	runtime.GOMAXPROCS(coresCount)
-
-	// second     ,s  * 1
-	// millisecond,ms * 1000
-	// microsecond,μs * 1000 * 1000
-	// nanosecond ,ns * 1000 * 1000 * 1000
-
-	// every loop : run + sleep = 1 unit
 
 	// 1 unit = 100 ms may be the best
 	unitHundresOfMicrosecond := 1000
 	runMicrosecond := unitHundresOfMicrosecond * percentage
 	sleepMicrosecond := unitHundresOfMicrosecond*100 - runMicrosecond
 
-	var stops []chan interface{}
 	for i := 0; i < coresCount; i++ {
-		stop := make(chan interface{}, 1)
-		stops = append(stops, stop)
-		go func() {
+		go func(ctx context.Context) {
 			runtime.LockOSThread()
 			// endless loop
 			for {
 				select {
-				case <-stop:
+				case <-ctx.Done():
 					return
 				default:
 					begin := time.Now()
@@ -44,11 +36,8 @@ func RunCPULoad(coresCount int, timeSeconds int, percentage int) {
 					time.Sleep(time.Duration(sleepMicrosecond) * time.Microsecond)
 				}
 			}
-		}()
+		}(ctx)
 	}
-	// how long
-	time.Sleep(time.Duration(timeSeconds) * time.Second)
-	for _, s := range stops {
-		s <- true
-	}
+
+	return ctx, cancelfunc
 }

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"log"
 	"os"
 	"runtime"
@@ -67,7 +68,8 @@ func main() {
 		if percentage <= 0 || percentage > 100 {
 			return cli.NewExitError("percentage must between 1 - 100", EINVAL)
 		}
-		internal.RunCPULoad(coresCount, timeSeconds, percentage)
+		ctx, _ := internal.RunCPULoad(context.Background(), coresCount, timeSeconds, percentage)
+		<-ctx.Done()
 		return nil
 	}
 

@@ -43,14 +43,25 @@ gocpuload -p 30 -c 2 -t 10
 ### as Liblary
 
 ```go
-import "github.com/0Delta/gocpuload"
+
+import (
+	"context"
+	"github.com/0Delta/gocpuload"
+)
 
 func main(){
-    // RunCPULoad(coresCount int, timeSeconds int, percentage int)
+    ctx := context.Background()
+    // RunCPULoad(ctx context.Context, coresCount int, timeSeconds int, percentage int)
     //
-    // This function currently does not return control immediately.
-    // If you want something action under pressure, use goroutine.
-    go gocpuload.RunCPULoad(runtime.NumCPU()/2, 3, 80)
+    // This function return control immediately.
+    loadCtx, loadCancel := gocpuload.RunCPULoad(ctx, runtime.NumCPU()/2, 3, 80)
+
+AdvancedUseage:
+    // If you want wait loading, use below.
+    <-loadCtx.Done()
+
+    // You can cancel loading before appoint time.
+    loadCancel()
 
 }
 ```

@@ -1,6 +1,7 @@
 package gocpuload_test
 
 import (
+	"context"
 	"fmt"
 	"math"
 	"runtime"
@@ -14,7 +15,7 @@ import (
 var (
 	target_cpuload    = 35
 	cpuload_threshold = 5.0
-	target_time       = 3
+	target_time       = 8
 	target_core       = imin(runtime.NumCPU()/2, 2)
 	time_threshold    = 3
 	failed_threshold  = 3
@@ -39,7 +40,7 @@ func TestSimple(t *testing.T) {
 	t.Logf("initial load %s:", f64tstr(cp_prev))
 	t.Logf("    avg %1.1f:", cp_prev_avg)
 
-	go gocpuload.RunCPULoad(target_core, target_time, target_cpuload)
+	_, _ = gocpuload.RunCPULoad(context.Background(), target_core, target_time, target_cpuload)
 
 	failed_count := 0
 	timer := 0
