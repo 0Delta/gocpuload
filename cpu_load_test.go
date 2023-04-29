@@ -45,7 +45,7 @@ func TestSimple(t *testing.T) {
 	timer := 0
 	for {
 		timer += 1
-		time.Sleep(time.Second * 1)
+		time.Sleep(time.Millisecond * 500)
 		cp_load, err := cpu.Percent(time.Second, true)
 		if err != nil {
 			t.Fatalf("get cpupercent error %s:", err)
@@ -63,9 +63,12 @@ func TestSimple(t *testing.T) {
 			loadcount += 1
 		}
 		if loadcount != 2 {
-			if f64avg(cp_load) < cpuload_threshold && timer > 3 {
-				t.Logf("Test Clear")
-				return
+			if f64avg(cp_load) < cpuload_threshold && timer >= 3 {
+				t.Logf("load power %s:", f64tstr(cp_load))
+				if loadcount == 0 {
+					t.Logf("load successful shutdown, Test Clear")
+					return
+				}
 			}
 			t.Errorf("load power error %s:", f64tstr(cp_load))
 			failed_count += 1

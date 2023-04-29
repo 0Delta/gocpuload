@@ -20,23 +20,35 @@ func RunCPULoad(coresCount int, timeSeconds int, percentage int) {
 	unitHundresOfMicrosecond := 1000
 	runMicrosecond := unitHundresOfMicrosecond * percentage
 	sleepMicrosecond := unitHundresOfMicrosecond*100 - runMicrosecond
+
+	var stops []chan interface{}
 	for i := 0; i < coresCount; i++ {
+		stop := make(chan interface{}, 1)
+		stops = append(stops, stop)
 		go func() {
 			runtime.LockOSThread()
 			// endless loop
 			for {
-				begin := time.Now()
-				for {
-					// run 100%
-					if time.Now().Sub(begin) > time.Duration(runMicrosecond)*time.Microsecond {
-						break
+				select {
+				case <-stop:
+					return
+				default:
+					begin := time.Now()
+					for {
+						// run 100%
+						if time.Now().Sub(begin) > time.Duration(runMicrosecond)*time.Microsecond {
+							break
+						}
 					}
+					// sleep
+					time.Sleep(time.Duration(sleepMicrosecond) * time.Microsecond)
 				}
-				// sleep
-				time.Sleep(time.Duration(sleepMicrosecond) * time.Microsecond)
 			}
 		}()
 	}
 	// how long
 	time.Sleep(time.Duration(timeSeconds) * time.Second)
+	for _, s := range stops {
+		s <- true
+	}
 }
